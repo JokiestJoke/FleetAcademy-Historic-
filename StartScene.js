@@ -62,8 +62,19 @@ class StartScene extends Phaser.Scene{
             for (let i = 0; i < gameStateMenu.buttons.length; i++){
                 let button = this.add.image(xCord, 250, `${gameStateMenu.buttons[i]}`).setScale(1.2);
                 xCord += 250;
-                /// Lets review how to set the as .setInteractive. I beleive it will have to be done in this loop as to make sure
-                /// that each button is set to interactive per iteration of this loop!
+                //Adding some interactivity. It's important to make all interactivity here in this gen loop, so that EACH button has some interactivity
+                button.setInteractive();
+                
+                button.on('pointerover', function(){
+                    // this gives the buttons a little bit of a pop when it is moused over. 
+                    this.setScale(1.5);
+                    
+
+                })
+
+                button.on('pointerup', function() {
+                    alert(`The ${gameStateMenu.buttons[i]} is working as expected.`)
+                })
             }
             
         };
@@ -72,7 +83,14 @@ class StartScene extends Phaser.Scene{
         buttonGen();
 
         //Creating a text Box 
-        const textBox = this.add.rectangle(650, 540, 600, 350, 0xffffff);
+        gameStateMenu.textBox = this.add.rectangle(650, 540, 600, 350, 0x37507B);
+        // Sadly Phaser documentation is too clear about what .setSTrokeStyle(intensity, color) does. In short, with experimentation
+        // in short, this adds a outline to a shape. 
+        gameStateMenu.textBox.setStrokeStyle(4, 0xefc53f);
+
+        
+        
+        
 
 
         // create all animations below
