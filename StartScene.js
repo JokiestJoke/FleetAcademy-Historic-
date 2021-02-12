@@ -3,7 +3,18 @@
 // initiate gameState
 const gameStateMenu = { 
     // Important that we define a state for the global sphere to make the buttons in buttonGen() accessible in the update() method.
-    interactiveButtonState: false
+    interactiveButtonState: false,
+    spriteText: {
+        newGameText: 'This is where new cadets begin their journey. \n Join countless others and serve your Imperator!',
+        continueText: 'Continue serving the Empire, and gain full-citizen rights!',
+        storyText: 'Delve into the historical vaults of the Empire',
+        creditsText: 'Imperial Hall of Heroes'
+    },
+    textBoxTextStyle: {
+        fontFamily: 'Courier',
+        size: '12px',  
+    }
+    
 
 };
 
@@ -53,9 +64,17 @@ class StartScene extends Phaser.Scene{
             'creditsButton'
         ];
 
-        const textBoxGen = () => {
+        // pretty simply function that creates a text box. Can be used to call in event Handlers.
+        const textBoxGen = (text) => {
+            //Creating a text Box 
+            gameStateMenu.textBox = this.add.rectangle(650, 540, 600, 350, 0x37507B);
+            // Sadly Phaser documentation is too clear about what .setSTrokeStyle(intensity, color) does. In short, with experimentation
+            // in short, this adds a outline to a shape. 
+            gameStateMenu.textBox.setStrokeStyle(4, 0xefc53f);
+            gameStateMenu.textBoxtext = this.add.text(440, 500, text, gameState.textBoxTextStyle);
             
-        }
+
+        };
 
         ///creating buttons
         ///create a function that will create the buttons.
@@ -73,8 +92,21 @@ class StartScene extends Phaser.Scene{
                     this.setScale(1.5);
                     // this sets the gameState of the buttons as true, and by doing so it allows for me to use this function to manipulate the update() method!
                     gameStateMenu.interactiveButtonState = true;
-                    //Testing purposes
-                    console.log(gameStateMenu.interactiveButtonState);
+                    if (gameStateMenu.buttons[i] === 'newGameButton') {
+                        //call this function to create the rectangle
+                        textBoxGen(gameStateMenu.spriteText.newGameText);
+                        // console.log(gameStateMenu.buttons[i]);
+                    } else if (gameStateMenu.buttons[i] === 'loadGameButton') {
+                        textBoxGen(gameStateMenu.spriteText.continueText);
+                        // console.log(gameStateMenu.buttons[i]);
+                    } else if (gameStateMenu.buttons[i] === 'storyButton') {
+                        textBoxGen(gameStateMenu.spriteText.storyText);
+                        // console.log(gameStateMenu.buttons[i]);
+                    } else if (gameStateMenu.buttons[i] === 'creditsButton') {
+                        textBoxGen(gameStateMenu.spriteText.creditsText);
+                        // console.log(gameStateMenu.buttons[i]);
+                    }
+                    
                     
                 });
 
@@ -83,7 +115,9 @@ class StartScene extends Phaser.Scene{
                     //returns the button to its originalish size. 
                     this.setScale(1.2)
                     gameStateMenu.interactiveButtonState = false;
-                    console.log(gameStateMenu.interactiveButtonState);
+                    //this is make sure the rectangle leaves the screen when the pointer leaves the button. 
+                    gameStateMenu.textBox.destroy();
+                    gameStateMenu.textBoxtext.destroy();
 
                 });
 
@@ -98,11 +132,7 @@ class StartScene extends Phaser.Scene{
         // call the buttonGen function
         buttonGen();
 
-        //Creating a text Box 
-        gameStateMenu.textBox = this.add.rectangle(650, 540, 600, 350, 0x37507B);
-        // Sadly Phaser documentation is too clear about what .setSTrokeStyle(intensity, color) does. In short, with experimentation
-        // in short, this adds a outline to a shape. 
-        gameStateMenu.textBox.setStrokeStyle(4, 0xefc53f);
+        
 
         // create all animations below
         //These animations will be manipulated in the create() method. 
