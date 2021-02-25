@@ -5,14 +5,15 @@ const gameStateMenu = {
     // Important that we define a state for the global sphere to make the buttons in buttonGen() accessible in the update() method.
     interactiveButtonState: false,
     spriteText: {
-        newGameText: 'This is where new cadets begin their journey. \n Join countless others and serve your Imperator!',
-        continueText: 'Continue serving the Empire, and gain full-citizen rights!',
+        newGameText: 'This is where new cadets begin their journey.\nJoin countless others and serve your Imperator!\nShould you choose to proceed, be aware that\nyou will be conscripted  at a minimum of two\nyears of service.',
+        continueText: 'Continue serving the Empire, and gain\nfull-citizen rights!',
         storyText: 'Delve into the historical vaults of the Empire',
         creditsText: 'Imperial Hall of Heroes'
     },
     textBoxTextStyle: {
         fontFamily: 'Courier',
-        size: '12px',  
+        size: '12px',
+        align: 'center'  
     }
     
 
@@ -27,11 +28,22 @@ class StartScene extends Phaser.Scene{
     preload(){
         // preloads the main menu sprite
         this.load.spritesheet('startSprite',
-        './assets/sprites/AdmiralMainMenuSpriteSheet.png',
+        './assets/sprites/AdmiralMainMenuSpriteSheetv2.png',
         {
             frameWidth: 512,
             frameHeight: 384
         });
+
+        //preloads main menu battleship
+        this.load.spritesheet('battleshipMenu',
+        './assets/sprites/battleshipSprite-Sheet1.png', 
+        {
+            frameWidth: 600, 
+            frameheight: 300
+        });
+
+        // loads background image
+        // this.load.image('menuBackground', './assets/sprites/mainMenuBackground.png')
 
         // preload the sprites that will be used as the buttons
 
@@ -46,14 +58,23 @@ class StartScene extends Phaser.Scene{
 
         // loads credits button
         this.load.image('creditsButton', './assets/sprites/creditsButton.png');
+
+        
     }
 //create all instances here
     create(){
         //Sets the gamestate to active.
         gameStateMenu.active = true;
 
+        // Creates the background image
+        // gameStateMenu.backgroundSprite = this.add.sprite(0, 0, 'menuBackground').setOrigin(0, 0);
+
+        //initiates the battleship sprite
+        gameStateMenu.battleshipMenu = this.add.sprite(500, 350, 'battleshipMenu');
+
         //initiates the start sprite used for the Main Menu Screen. Syntax (X, Y, 'spriteKey')
         gameStateMenu.startSprite = this.add.sprite(210, 580, 'startSprite');
+
 
         //creates a buttons array with the button names. THis will be used to load button onto the scren in a for loop.
 
@@ -64,25 +85,23 @@ class StartScene extends Phaser.Scene{
             'creditsButton'
         ];
 
+
         // pretty simply function that creates a text box. Can be used to call in event Handlers.
         const textBoxGen = (text) => {
             //Creating a text Box 
             gameStateMenu.textBox = this.add.rectangle(650, 540, 600, 350, 0x37507B);
-            // Sadly Phaser documentation is too clear about what .setSTrokeStyle(intensity, color) does. In short, with experimentation
-            // in short, this adds a outline to a shape. 
+            // setSTrokeStyle(intensity, color) In short this adds a outline to a shape. 
             gameStateMenu.textBox.setStrokeStyle(4, 0xefc53f);
-            gameStateMenu.textBoxtext = this.add.text(440, 500, text, gameState.textBoxTextStyle);
+            gameStateMenu.textBoxText = this.add.text(440, 500, text, gameState.textBoxTextStyle);
             
 
         };
 
         ///creating buttons
-        ///create a function that will create the buttons.
-        ///a function expression allows for cleaner code.
         const buttonGen = () => {
             let xCord = 150;
             for (let i = 0; i < gameStateMenu.buttons.length; i++){
-                let button = this.add.image(xCord, 250, `${gameStateMenu.buttons[i]}`).setScale(1.2);
+                let button = this.add.image(xCord, 150, `${gameStateMenu.buttons[i]}`).setScale(1.2);
                 xCord += 250;
                 //Adding some interactivity. It's important to make all interactivity here in this gen loop, so that EACH button has some interactivity
                 button.setInteractive();
@@ -117,7 +136,7 @@ class StartScene extends Phaser.Scene{
                     gameStateMenu.interactiveButtonState = false;
                     //this is make sure the rectangle leaves the screen when the pointer leaves the button. 
                     gameStateMenu.textBox.destroy();
-                    gameStateMenu.textBoxtext.destroy();
+                    gameStateMenu.textBoxText.destroy();
 
                 });
 
@@ -136,6 +155,17 @@ class StartScene extends Phaser.Scene{
 
         // create all animations below
         //These animations will be manipulated in the create() method. 
+        this.anims.create({
+            key: 'battleshipMenuIdle',
+            frames: this.anims.generateFrameNumbers(
+                'battleshipMenu',
+                {
+                    start: 0,
+                    end: 8
+                }),
+                frameRate: 2,
+                repeat: -1
+        });
 
         // this creates the idle animation
         this.anims.create({
@@ -152,7 +182,8 @@ class StartScene extends Phaser.Scene{
 
         this.anims.create({
             key: 'buttonSelected',
-            frames: this.anims.generateFrameNumbers('startSprite', 
+            frames: this.anims.generateFrameNumbers(
+            'startSprite', 
             {
                 start: 16,
                 end: 40
@@ -161,11 +192,11 @@ class StartScene extends Phaser.Scene{
             repeat: -1
         });
 
-        
+ 
         //Game gameTitle Text
         const gameTitle = {
-            x: 100,
-            y: 50, 
+            x: 550,
+            y: 600, 
             text: "FLEET ACADEMY: \n\n A Naval Saga",
             style: {
                 fontSize: '45px',
@@ -189,9 +220,11 @@ class StartScene extends Phaser.Scene{
     update(){
         // if the gameStateMenu.interactiveButtonState is true, which is defined in create()'s buttonGen(), then play buttonSelected animations
         if (gameStateMenu.interactiveButtonState === true){
-            gameStateMenu.startSprite.anims.play('buttonSelected', true);     
+            gameStateMenu.startSprite.anims.play('buttonSelected', true);
+
         } else {
             gameStateMenu.startSprite.anims.play('idle', true);
+            gameStateMenu.battleshipMenu.anims.play('battleshipMenuIdle', true);
         }
 
     }
