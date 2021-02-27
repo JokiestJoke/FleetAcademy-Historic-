@@ -1,5 +1,7 @@
 // Game Menu Scene 
 
+
+/// at some point gamestate menu must be moved to the config file, and renamed simply gameState so that all JS scene files can interact.
 // initiate gameState
 const gameStateMenu = { 
     // Important that we define a state for the global sphere to make the buttons in buttonGen() accessible in the update() method.
@@ -26,6 +28,15 @@ class StartScene extends Phaser.Scene{
     
 // preload method. load all assets here before calling an instance with create.
     preload(){
+
+        //preloads star sprite sheet
+        this.load.spritesheet('wanderingStar', 
+        './assets/sprites/starSprite80x80-Sheet.png',
+        {
+            frameWidth: 80,
+            frameHeight: 80
+        });
+
         // preloads the main menu sprite
         this.load.spritesheet('startSprite',
         './assets/sprites/AdmiralMainMenuSpriteSheetv2.png',
@@ -35,12 +46,15 @@ class StartScene extends Phaser.Scene{
         });
 
         //preloads main menu battleship
-        this.load.spritesheet('battleshipMenu',
-        './assets/sprites/battleshipSprite-Sheet1.png', 
-        {
-            frameWidth: 600, 
-            frameheight: 300
-        });
+        //currently not working. this sprite sheet for some reason is displaying fully rather than just 1 frame. I gota review and fix this.
+        // this.load.spritesheet('battleshipMenu',
+        // './assets/sprites/battleshipSprite-Sheet1.png', 
+        // {
+        //     frameWidth: 600, 
+        //     frameheight: 300
+        // });
+
+        this.load.image('battleshipMenu', './assets/sprites/mainMenuShip.png')
 
         // loads background image
         // this.load.image('menuBackground', './assets/sprites/mainMenuBackground.png')
@@ -66,11 +80,37 @@ class StartScene extends Phaser.Scene{
         //Sets the gamestate to active.
         gameStateMenu.active = true;
 
+        const starGen = () => {
+            let wanderingStar = this.add.sprite(450,450, 'wanderingStar');
+            // anims currently not running.
+            wanderingStar.anims.play('starAnimations', true);
+
+
+
+        };
+        //call the starGen function
+        starGen();
+
+        //initiates the wandering star sprite
+        // gameStateMenu.wanderingStar = this.add.sprite(450,450, 'wanderingStar');
+
         // Creates the background image
         // gameStateMenu.backgroundSprite = this.add.sprite(0, 0, 'menuBackground').setOrigin(0, 0);
 
         //initiates the battleship sprite
-        gameStateMenu.battleshipMenu = this.add.sprite(500, 350, 'battleshipMenu');
+        gameStateMenu.battleshipMenu = this.physics.add.sprite(450, 450, 'battleshipMenu');
+
+        //setting up a tween for the battleship.
+        gameStateMenu.battleshipMenuTween = this.tweens.add({
+            targets: gameStateMenu.battleshipMenu,
+            y: 300,
+            x: 300,
+            ease: 'linear',
+            duration: 5000,
+            repeat: -1,
+            yoyo: true
+
+        });
 
         //initiates the start sprite used for the Main Menu Screen. Syntax (X, Y, 'spriteKey')
         gameStateMenu.startSprite = this.add.sprite(210, 580, 'startSprite');
@@ -150,22 +190,24 @@ class StartScene extends Phaser.Scene{
 
         // call the buttonGen function
         buttonGen();
+        ;
 
         
 
         // create all animations below
         //These animations will be manipulated in the create() method. 
-        this.anims.create({
-            key: 'battleshipMenuIdle',
-            frames: this.anims.generateFrameNumbers(
-                'battleshipMenu',
-                {
-                    start: 0,
-                    end: 8
-                }),
-                frameRate: 2,
-                repeat: -1
-        });
+        //the battleshipMenuIdle animation is not working. Needs to be fixed once sprite is loaded properly...
+        // this.anims.create({
+        //     key: 'battleshipMenuIdle',
+        //     frames: this.anims.generateFrameNumbers(
+        //         'battleshipMenu',
+        //         {
+        //             start: 0,
+        //             end: 8
+        //         }),
+        //         frameRate: 2,
+        //         repeat: -1
+        // });
 
         // this creates the idle animation
         this.anims.create({
@@ -191,6 +233,19 @@ class StartScene extends Phaser.Scene{
             frameRate: 5, 
             repeat: -1
         });
+
+        this.anims.create({
+            key: 'starAnimations',
+            frames: this.anims.generateFrameNumbers(
+                'wanderingStar',
+                {
+                    start: 0,
+                    end: 5
+                }),
+                frameRate: 2,
+                repeat: -1
+        });
+
 
  
         //Game gameTitle Text
@@ -224,7 +279,8 @@ class StartScene extends Phaser.Scene{
 
         } else {
             gameStateMenu.startSprite.anims.play('idle', true);
-            gameStateMenu.battleshipMenu.anims.play('battleshipMenuIdle', true);
+            // gameStateMenu.battleshipMenu.anims.play('battleshipMenuIdle', true);
+            // gameStateMenu.wanderingStar.anims.play('starAnimations', true);
         }
 
     }
