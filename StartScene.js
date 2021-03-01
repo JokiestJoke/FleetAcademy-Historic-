@@ -57,7 +57,7 @@ class StartScene extends Phaser.Scene{
         this.load.image('battleshipMenu', './assets/sprites/mainMenuShip.png')
 
         // loads background image
-        // this.load.image('menuBackground', './assets/sprites/mainMenuBackground.png')
+        this.load.image('menuBackground', './assets/sprites/MainMenuBackground.png')
 
         // preload the sprites that will be used as the buttons
 
@@ -77,25 +77,13 @@ class StartScene extends Phaser.Scene{
     }
 //create all instances here
     create(){
-        //Sets the gamestate to active.
-        gameStateMenu.active = true;
-
-        const starGen = () => {
-            let wanderingStar = this.add.sprite(450,450, 'wanderingStar');
-            // anims currently not running.
-            wanderingStar.anims.play('starAnimations', true);
-
-
-
-        };
-        //call the starGen function
-        starGen();
-
-        //initiates the wandering star sprite
-        // gameStateMenu.wanderingStar = this.add.sprite(450,450, 'wanderingStar');
 
         // Creates the background image
-        // gameStateMenu.backgroundSprite = this.add.sprite(0, 0, 'menuBackground').setOrigin(0, 0);
+        gameStateMenu.backgroundSprite = this.add.sprite(0, 0, 'menuBackground').setOrigin(0, 0);
+
+        
+        //Sets the gamestate to active.
+        gameStateMenu.active = true;
 
         //initiates the battleship sprite
         gameStateMenu.battleshipMenu = this.physics.add.sprite(450, 450, 'battleshipMenu');
@@ -111,6 +99,53 @@ class StartScene extends Phaser.Scene{
             yoyo: true
 
         });
+        
+
+        // creates the animation for the stars. It must be defined before creating starGen or the animation will not run.
+        this.anims.create({
+            key: 'starAnimations',
+            frames: this.anims.generateFrameNumbers(
+                'wanderingStar',
+                {
+                    start: 0,
+                    end: 5
+                }),
+                frameRate: 2,
+                repeat: -1
+        });
+
+
+        const starGen = () => {
+
+            let starInfo = {
+                yCord: Math.floor(Math.random() * 768),
+                spriteKey: 'wanderingStar'
+            };
+
+            let wanderingStar = this.add.sprite(1024, starInfo.yCord, starInfo.spriteKey);
+            wanderingStar.anims.play('starAnimations', true);
+            let wanderingStarTween = this.tweens.add({
+                targets: wanderingStar,
+                x: 0,
+                ease: 'linear',
+                duration: 5000,
+                repeat: 0,
+                onComplete: function () {
+                    wanderingStar.destroy();
+                    // console.log('Star Destroyed');   
+                }
+
+            });
+      
+               
+        };
+        //call the starGen function
+        const starGenLoop = this.time.addEvent({
+            delay: 2000,
+            callback: starGen,
+            callbackScope: this,
+            loop: true
+        });
 
         //initiates the start sprite used for the Main Menu Screen. Syntax (X, Y, 'spriteKey')
         gameStateMenu.startSprite = this.add.sprite(210, 580, 'startSprite');
@@ -125,15 +160,13 @@ class StartScene extends Phaser.Scene{
             'creditsButton'
         ];
 
-
         // pretty simply function that creates a text box. Can be used to call in event Handlers.
         const textBoxGen = (text) => {
             //Creating a text Box 
             gameStateMenu.textBox = this.add.rectangle(650, 540, 600, 350, 0x37507B);
             // setSTrokeStyle(intensity, color) In short this adds a outline to a shape. 
             gameStateMenu.textBox.setStrokeStyle(4, 0xefc53f);
-            gameStateMenu.textBoxText = this.add.text(440, 500, text, gameState.textBoxTextStyle);
-            
+            gameStateMenu.textBoxText = this.add.text(440, 500, text, gameState.textBoxTextStyle);    
 
         };
 
@@ -190,7 +223,7 @@ class StartScene extends Phaser.Scene{
 
         // call the buttonGen function
         buttonGen();
-        ;
+        
 
         
 
@@ -233,19 +266,6 @@ class StartScene extends Phaser.Scene{
             frameRate: 5, 
             repeat: -1
         });
-
-        this.anims.create({
-            key: 'starAnimations',
-            frames: this.anims.generateFrameNumbers(
-                'wanderingStar',
-                {
-                    start: 0,
-                    end: 5
-                }),
-                frameRate: 2,
-                repeat: -1
-        });
-
 
  
         //Game gameTitle Text
