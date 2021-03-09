@@ -214,9 +214,16 @@ class StartScene extends Phaser.Scene{
                 });
 
 
-                button.on('pointerup', function() {
-                    alert(`The ${gameStateMenu.buttons[i]} is working as expected.`)
-                });
+                this.input.on('pointerup', function(pointer) {
+                    // alert(`The ${gameStateMenu.buttons[i]} is working as expected.`)
+                    // this conditional will help progress player between options and scenes
+                    // 'this' must have a defined context or game will not change scenes. 
+                    if (gameStateMenu.buttons[i] === 'newGameButton') {
+                        this.scene.stop('StartScene');
+                        this.scene.start('SecondScene');
+
+                    }
+                }, this);
             }
             
         };

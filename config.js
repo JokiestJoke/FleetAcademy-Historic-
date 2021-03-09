@@ -1,3 +1,7 @@
+const gameState = {
+
+};
+
 const config = {
     type: Phaser.AUTO,
     width: 1024,
@@ -11,7 +15,7 @@ const config = {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    scene: [ StartScene, TestScene ]
+    scene: [ StartScene, SecondScene, TestScene ]
   };
   
   const game = new Phaser.Game(config);

@@ -1,6 +1,4 @@
-const gameState = {
 
-};
 
 
 /// Test screen class 
