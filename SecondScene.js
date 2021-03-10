@@ -41,6 +41,18 @@ class SecondScene extends Phaser.Scene {
             repeat: -1
         }); 
 
+        this.anims.create({
+            key: 'playerMove',
+            frames: this.anims.generateFrameNumbers(
+                'admiralSpriteOne',
+                {
+                    start: 20,
+                    end: 24
+                }),
+                frameRate: 6,
+                repeat: -1       
+        });
+
         //initialize button inputs
         gameState.cursors = this.input.keyboard.createCursorKeys();
 
@@ -55,8 +67,10 @@ class SecondScene extends Phaser.Scene {
                 console.log('up is down');
             } else if (gameState.cursors.right.isDown){
                 console.log('right is down');
+                gameState.PlayerSprite.anims.play('playerMove', true).flipX=false;
             } else if (gameState.cursors.left.isDown) {
                 console.log('left is down');
+                gameState.PlayerSprite.anims.play('playerMove', true).flipX=true;
             } else if (gameState.cursors.down.isDown) {
                 console.log('down is down')
             }  else if (gameState.cursors.space.isDown) { 

@@ -214,7 +214,7 @@ class StartScene extends Phaser.Scene{
                 });
 
 
-                this.input.on('pointerup', function(pointer) {
+                button.on('pointerup', function(pointer) {
                     // alert(`The ${gameStateMenu.buttons[i]} is working as expected.`)
                     // this conditional will help progress player between options and scenes
                     // 'this' must have a defined context or game will not change scenes. 
