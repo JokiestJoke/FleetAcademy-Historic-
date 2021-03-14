@@ -5,6 +5,7 @@ class SecondScene extends Phaser.Scene {
 
     preload() {
 
+        // player sprite sheet
         this.load.spritesheet('admiralSpriteOne', 
         './assets/sprites/admiralSpriteTwo80X120-Sheet.png',
         {
@@ -12,10 +13,13 @@ class SecondScene extends Phaser.Scene {
             frameHeight: 120
         });
 
+        // loading the wall sprite
+        this.load.image('longestWallVer', './assets/sprites/wallSprite30X764.png');
+
     }
 
     create() {
-        gameState.PlayerSprite = this.add.sprite(400, 400, 'admiralSpriteOne');
+        gameState.PlayerSprite = this.physics.add.sprite(450, 400, 'admiralSpriteOne');
         //trying to get all the animations to fit nicely into a single function.
         this.anims.create({
             key: 'idlePlayer',
@@ -69,9 +73,54 @@ class SecondScene extends Phaser.Scene {
         //initialize button inputs
         gameState.cursors = this.input.keyboard.createCursorKeys();
 
+        // below is code for building static walls. Tho due to a misunderstanding of code. currently not working. we can use the code to spawn sprites but the physics doesnt matter since we are simply setting world bounds.
+
+        let neededWalls = [ 
+            {
+                name: 'longVerticalWall1',
+                spriteKey: 'longestWallVer',
+                x: 13,
+                y: 382
+            },
+            {
+                name: 'longVerticalWall2',
+                spriteKey: 'longestWallVer',
+                x: 1011,
+                y: 382
+            }
+        ];
+
+        const wallsStaticGroup = this.physics.add.staticGroup();
+
+        // wallsStaticGroup.create(13, 382, 'longestWallVer')
+        // wallsStaticGroup.create(1011, 382, 'longestWallVer')
+
+
+
+        const wallSpawn = arr => arr.forEach(wall => wallsStaticGroup.create(wall.x, wall.y, wall.spriteKey));
+
+        wallSpawn(neededWalls);
+
+        this.physics.add.collider(gameState.PlayerSprite, wallsStaticGroup);
+
+        // Creating camera for the game.
+
+        // this sets the world bounds to the size of the config file. players will not exit the game.
+        gameState.PlayerSprite.setCollideWorldBounds(true);
+
+        // the syntax for this is this.cameras.main.setBound(xPositionOfCamera, yPositionOfCamera, camera width, camera height);
+        this.cameras.main.setBounds(0, 0, 1000, 2000);
+        // must make sure that the world bounds are updated so that the sprite can walk off screen.
+        // we start at 25 here so that the sprite
+        this.physics.world.setBounds(25, 0, 975, 2000);
+        //camera follows sprite.
+        this.cameras.main.startFollow(gameState.PlayerSprite, true, 0, 1);
+
+
 
 
     }
+    
 
     update() {
         // creating a function for 
@@ -116,6 +165,8 @@ class SecondScene extends Phaser.Scene {
                 //handling 'southward' movement
                 // console.log('down is down')
                 gameState.PlayerSprite.y += 2;
+                // we are going to use the idle animation to make it appear we are moving down.
+                gameState.PlayerSprite.anims.play('idlePlayer', true);
             } else if (gameState.cursors.space.isDown) {                           
                 gameState.PlayerSprite.anims.play('playerTalk', true);
             } else if (gameState.cursors.up.isDown) {

@@ -9,7 +9,11 @@ const config = {
     backgroundColor: "000000",
     physics: {
       default: 'arcade',
-      arcade: {}
+      arcade: {
+        gravity: { x: 0 },
+        enableBody: true,
+        debug: true
+      }
     },
     scale: {
       mode: Phaser.Scale.FIT,
