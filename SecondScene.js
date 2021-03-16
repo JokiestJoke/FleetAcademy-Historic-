@@ -20,6 +20,11 @@ class SecondScene extends Phaser.Scene {
 
     create() {
         gameState.PlayerSprite = this.physics.add.sprite(450, 400, 'admiralSpriteOne');
+
+        // must make sure that the world bounds are updated so that the sprite can walk off screen.
+        // we start at 25 here so that the sprite
+        this.physics.world.setBounds(25, 0, 975, 2000);
+
         //trying to get all the animations to fit nicely into a single function.
         this.anims.create({
             key: 'idlePlayer',
@@ -79,14 +84,20 @@ class SecondScene extends Phaser.Scene {
             {
                 name: 'longVerticalWall1',
                 spriteKey: 'longestWallVer',
-                x: 13,
+                x: 100,
                 y: 382
             },
             {
                 name: 'longVerticalWall2',
                 spriteKey: 'longestWallVer',
-                x: 1011,
+                x: 800,
                 y: 382
+            },
+            {
+                name: 'testWall',
+                spriteKey: 'longestWallVer',
+                x: 512,
+                y: 1000
             }
         ];
 
@@ -98,10 +109,34 @@ class SecondScene extends Phaser.Scene {
 
 
         const wallSpawn = arr => arr.forEach(wall => wallsStaticGroup.create(wall.x, wall.y, wall.spriteKey));
-
         wallSpawn(neededWalls);
 
-        this.physics.add.collider(gameState.PlayerSprite, wallsStaticGroup);
+
+
+        this.physics.add.collider(gameState.PlayerSprite, wallsStaticGroup, function() {
+            // console.log('collision!');
+            neededWalls.forEach((elem, index) => {
+                // console.log(elem.x)
+                if (gameState.PlayerSprite.x < elem.x && index === 2) {
+                    console.log(`collison left at ${elem.name}`);
+                    gameState.PlayerSprite.x -= 5;
+                } else if (gameState.PlayerSprite.x > elem.x && index === 2) {
+                    console.log(`collison right at ${elem.name}`);
+                    gameState.PlayerSprite.x += 5;
+                } else if (gameState.PlayerSprite.y < elem.y) {
+                    console.log('collison from below')
+                    gameState.PlayerSprite.y -= 5;
+                } else {
+                    console.log('error')
+                }
+            })
+            
+            
+            
+            
+
+            
+        }, null, this);
 
         // Creating camera for the game.
 
@@ -110,9 +145,7 @@ class SecondScene extends Phaser.Scene {
 
         // the syntax for this is this.cameras.main.setBound(xPositionOfCamera, yPositionOfCamera, camera width, camera height);
         this.cameras.main.setBounds(0, 0, 1000, 2000);
-        // must make sure that the world bounds are updated so that the sprite can walk off screen.
-        // we start at 25 here so that the sprite
-        this.physics.world.setBounds(25, 0, 975, 2000);
+        
         //camera follows sprite.
         this.cameras.main.startFollow(gameState.PlayerSprite, true, 0, 1);
 
